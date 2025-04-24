@@ -4,9 +4,17 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EjercicioController;
+use App\Http\Controllers\SesionController;
 
 Route::get('/', function () {
     return view('welcome');
+})->name('home');
+
+Route::resource('ejercicios', EjercicioController::class);
+Route::resource('sesions', SesionController::class);
+Route::get('/', function() {
+    return redirect()->route('sesions.index');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
