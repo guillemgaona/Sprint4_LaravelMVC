@@ -9,6 +9,10 @@ class Sesion extends Model
     protected $table = 'sesions';
     protected $fillable = ['fecha','nota'];
 
+    protected $casts = [
+        'fecha' => 'date',
+    ];
+
     public function series()
     {
         return $this->hasMany(Serie::class);
