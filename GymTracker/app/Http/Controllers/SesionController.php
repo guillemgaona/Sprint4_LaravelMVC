@@ -1,95 +1,93 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Sesion;
 use App\Models\Ejercicio;
 use Illuminate\Http\Request;
 
 class SesionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $sesiones = Sesion::with('series.ejercicio')->orderBy('fecha','desc')->get();
-        return view('sesions.index', compact('sesiones'));
+        $sesiones = Sesion::withCount('series')->paginate(10);
+        return view('sesiones.index', compact('sesiones'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $ejercicios = Ejercicio::all();
-        return view('sesions.create', compact('ejercicios'));
+        return view('sesiones.create', compact('ejercicios'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
             'fecha'=>'required|date',
             'nota'=>'nullable|string',
-            'series'=>'required|array'
+            'series'=>'nullable|array',
+            'series.*.id_ejercicio'=>'required|exists:ejercicio,id_ejercicio',
+            'series.*.serie_num'=>'required|integer',
+            'series.*.repeticiones'=>'required|integer',
+            'series.*.peso'=>'required|numeric',
         ]);
 
         $sesion = Sesion::create($data);
-        foreach ($data['series'] as $serie) {
-            $sesion->series()->create($serie);
+
+        if(!empty($data['series'])){
+            foreach($data['series'] as $s){
+                $sesion->series()->create($s);
+            }
         }
 
-        return redirect()->route('sesions.index');
+        return redirect()->route('sesiones.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Sesion $sesion)
     {
         $sesion->load('series.ejercicio');
-        return view('sesions.show', compact('sesion'));
+        return view('sesiones.show', compact('sesion'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Sesion $sesion)
     {
-        $sesion->load('series');
         $ejercicios = Ejercicio::all();
-        return view('sesions.edit', compact('sesion','ejercicios'));
+        $sesion->load('series');
+        return view('sesiones.edit', compact('sesion','ejercicios'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Sesion $sesion)
     {
         $data = $request->validate([
             'fecha'=>'required|date',
             'nota'=>'nullable|string',
-            'series'=>'required|array'
+            'series'=>'nullable|array',
+            'series.*.id_serie'=>'nullable|integer|exists:serie,id_serie',
+            'series.*.id_ejercicio'=>'required|exists:ejercicio,id_ejercicio',
+            'series.*.serie_num'=>'required|integer',
+            'series.*.repeticiones'=>'required|integer',
+            'series.*.peso'=>'required|numeric',
         ]);
 
         $sesion->update($data);
+
+      
         $sesion->series()->delete();
-        foreach ($data['series'] as $serie) {
-            $sesion->series()->create($serie);
+        if(!empty($data['series'])){
+            foreach($data['series'] as $s){
+                $sesion->series()->create([
+                    'id_ejercicio'=>$s['id_ejercicio'],
+                    'serie_num'=>$s['serie_num'],
+                    'repeticiones'=>$s['repeticiones'],
+                    'peso'=>$s['peso'],
+                ]);
+            }
         }
 
-        return redirect()->route('sesions.show', $sesion);
+        return redirect()->route('sesiones.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Sesion $sesion)
     {
         $sesion->delete();
-        return redirect()->route('sesions.index');
+        return back();
     }
 }

@@ -9,24 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('series', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('sesion_id')->constrained('sesions')->onDelete('cascade');
-            $table->foreignId('ejercicio_id')->constrained('ejercicios')->onDelete('cascade');
+        Schema::create('serie', function (Blueprint $table) {
+            $table->id('id_serie');
+            $table->foreignId('id_sesion')
+                  ->constrained('sesion','id_sesion')
+                  ->onDelete('cascade');
+            $table->foreignId('id_ejercicio')
+                  ->constrained('ejercicio','id_ejercicio')
+                  ->onDelete('cascade');
             $table->integer('serie_num');
             $table->integer('repeticiones');
-            $table->decimal('peso', 5, 2);
+            $table->decimal('peso', 4, 2);
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('series');
+        Schema::dropIfExists('serie');
     }
 };
