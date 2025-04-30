@@ -9,23 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('ejercicios', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre');
-            $table->enum('grupo_muscular', ['pecho','espalda','piernas','hombros','brazos','core','otros']);
+        Schema::create('ejercicio', function (Blueprint $table) {
+            $table->id('id_ejercicio');
+            $table->string('nombre', 100);
+            $table->enum('grupo_muscular', [
+                'pecho','espalda','piernas','hombros','brazos','core','otros'
+            ]);
             $table->text('descripcion')->nullable();
             $table->string('imagen_demo')->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('ejercicios');
+        Schema::dropIfExists('ejercicio');
     }
+    
 };

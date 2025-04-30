@@ -9,21 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('sesions', function (Blueprint $table) {
-            $table->id();
+        Schema::create('sesion', function (Blueprint $table) {
+            $table->id('id_sesion');
             $table->date('fecha');
             $table->text('nota')->nullable();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('sesions');
+        Schema::dropIfExists('sesion');
     }
 };
