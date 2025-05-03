@@ -12,10 +12,11 @@ class SesionController extends Controller
         return view('sesiones.index', compact('sesiones'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $ejercicios = Ejercicio::all();
-        return view('sesiones.create', compact('ejercicios'));
+        $numSeries = $request->get('numSeries', 1);
+        return view('sesiones.create', compact('ejercicios', 'numSeries'));
     }
 
     public function store(Request $request)
@@ -47,11 +48,11 @@ class SesionController extends Controller
         return view('sesiones.show', compact('sesion'));
     }
 
-    public function edit(Sesion $sesion)
+    public function edit(Request $request, Sesion $sesion)
     {
         $ejercicios = Ejercicio::all();
-        $sesion->load('series');
-        return view('sesiones.edit', compact('sesion','ejercicios'));
+        $numSeries = $request->get('numSeries', $sesion->series->count());
+        return view('sesiones.edit', compact('sesion','ejercicios','numSeries'));
     }
 
     public function update(Request $request, Sesion $sesion)

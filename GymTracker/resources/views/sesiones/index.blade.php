@@ -11,7 +11,7 @@
         <tr>
             <th class="p-2 text-left">ID</th>
             <th class="p-2 text-left">Fecha</th>
-            <th class="p-2 text-left">#Series</th>
+            <th class="p-2 text-left">Número de Ejercicios</th>
             <th class="p-2"></th>
         </tr>
     </thead>
