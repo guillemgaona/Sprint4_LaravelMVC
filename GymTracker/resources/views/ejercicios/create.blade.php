@@ -2,7 +2,7 @@
 
 @section('content')
 <h1 class="text-xl font-bold mb-4">Crear Ejercicio</h1>
-<form action="{{ route('ejercicios.store') }}" method="POST">
+<form action="{{ route('ejercicios.store') }}" method="POST"  enctype="multipart/form-data">
     @csrf
 
     <label class="block mb-2">Nombre
@@ -21,8 +21,17 @@
         <textarea name="descripcion" class="w-full p-2 border rounded">{{ old('descripcion') }}</textarea>
     </label>
 
-    <label class="block mb-4">URL Imagen Demo
-        <input name="imagen_demo" value="{{ old('imagen_demo') }}" class="w-full p-2 border rounded">
+  <label class="block mb-4">
+      Imagen Demo
+      <input
+        type="file"
+        name="imagen_demo"
+        accept="image/*"
+        class="w-full p-2 border rounded"
+      >
+      @error('imagen_demo')
+      <div class="text-red-500 mt-1">{{ $message }}</div>
+    @enderror
     </label>
 
     <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Crear</button>

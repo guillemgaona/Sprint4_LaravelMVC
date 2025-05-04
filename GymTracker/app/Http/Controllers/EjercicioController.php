@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Models\Ejercicio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EjercicioController extends Controller
 {
@@ -19,12 +20,18 @@ class EjercicioController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nombre' => 'required|string|max:100',
-            'grupo_muscular'=>'required|in:pecho,espalda,piernas,hombros,brazos,core,otros',
-            'descripcion'=>'nullable|string',
-            'imagen_demo'=>'nullable|url',
+            'nombre'         => 'required|string|max:100',
+            'grupo_muscular' => 'required|in:pecho,espalda,piernas,hombros,brazos,core,otros',
+            'descripcion'    => 'nullable|string',
+            'imagen_demo'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+    
+        if ($file = $request->file('imagen_demo')) {
+            $data['imagen_demo'] = $file->store('ejercicios', 'public');
+        }
+    
         Ejercicio::create($data);
+    
         return redirect()->route('ejercicios.index');
     }
 
@@ -41,12 +48,21 @@ class EjercicioController extends Controller
     public function update(Request $request, Ejercicio $ejercicio)
     {
         $data = $request->validate([
-            'nombre'=>'required|string|max:100',
-            'grupo_muscular'=>'required|in:pecho,espalda,piernas,hombros,brazos,core,otros',
-            'descripcion'=>'nullable|string',
-            'imagen_demo'=>'nullable|url',
+            'nombre'         => 'required|string|max:100',
+            'grupo_muscular' => 'required|in:pecho,espalda,piernas,hombros,brazos,core,otros',
+            'descripcion'    => 'nullable|string',
+            'imagen_demo'    => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+    
+        if ($file = $request->file('imagen_demo')) {
+            if ($ejercicio->imagen_demo) {
+                Storage::disk('public')->delete($ejercicio->imagen_demo);
+            }
+            $data['imagen_demo'] = $file->store('ejercicios', 'public');
+        }
+    
         $ejercicio->update($data);
+    
         return redirect()->route('ejercicios.index');
     }
 

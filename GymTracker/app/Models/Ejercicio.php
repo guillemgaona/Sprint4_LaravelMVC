@@ -12,4 +12,11 @@ class Ejercicio extends Model
     {
         return $this->hasMany(Serie::class, 'id_ejercicio', 'id_ejercicio');
     }
+
+    public function getImagenDemoUrlAttribute()
+{
+    return $this->imagen_demo
+        ? asset('storage/'.$this->imagen_demo)
+        : null;
+}
 }
