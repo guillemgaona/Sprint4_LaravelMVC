@@ -11,6 +11,12 @@
        class="px-4 py-2 bg-gray-300 rounded">Añadir Serie</a>
 </div>
 
+@if(session('success'))
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+
 <form action="{{ route('sesiones.update', $sesion) }}" method="POST">
     @csrf
     @method('PUT')
@@ -29,10 +35,23 @@
     <div class="space-y-4 mb-4">
         @php
             $old = old('series', []);
+            $series = $sesion->series->toArray();
         @endphp
         @for($i = 0; $i < $count; $i++)
         @php
-            $serieData = $old[$i] ?? ($sesion->series[$i]->toArray() ?? []);
+            $serieData = [];
+            if (isset($old[$i])) {
+                $serieData = $old[$i];
+            } elseif (isset($series[$i])) {
+                $serieData = $series[$i];
+            } else {
+                $serieData = [
+                    'id_ejercicio' => '',
+                    'serie_num' => $i + 1,
+                    'repeticiones' => '',
+                    'peso' => ''
+                ];
+            }
         @endphp
         <div class="flex space-x-2 items-end">
             <select name="series[{{ $i }}][id_ejercicio]" class="p-2 border rounded" required>
@@ -45,7 +64,7 @@
                 @endforeach
             </select>
             <input type="number" name="series[{{ $i }}][serie_num]" 
-                   value="{{ $serieData['serie_num'] ?? '' }}" 
+                   value="{{ $serieData['serie_num'] ?? ($i + 1) }}" 
                    placeholder="Nº" class="w-16 p-2 border rounded" required>
             <input type="number" name="series[{{ $i }}][repeticiones]" 
                    value="{{ $serieData['repeticiones'] ?? '' }}" 

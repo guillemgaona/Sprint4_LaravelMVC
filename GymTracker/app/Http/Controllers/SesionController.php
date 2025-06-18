@@ -61,29 +61,33 @@ class SesionController extends Controller
             'fecha'=>'required|date',
             'nota'=>'nullable|string',
             'series'=>'nullable|array',
-            'series.*.id_serie'=>'nullable|integer|exists:serie,id_serie',
             'series.*.id_ejercicio'=>'required|exists:ejercicio,id_ejercicio',
             'series.*.serie_num'=>'required|integer',
             'series.*.repeticiones'=>'required|integer',
             'series.*.peso'=>'required|numeric',
         ]);
 
-        $sesion->update($data);
+        $sesion->update([
+            'fecha' => $data['fecha'],
+            'nota' => $data['nota']
+        ]);
 
-      
+        // Eliminar series existentes
         $sesion->series()->delete();
+
+        // Crear nuevas series
         if(!empty($data['series'])){
             foreach($data['series'] as $s){
                 $sesion->series()->create([
-                    'id_ejercicio'=>$s['id_ejercicio'],
-                    'serie_num'=>$s['serie_num'],
-                    'repeticiones'=>$s['repeticiones'],
-                    'peso'=>$s['peso'],
+                    'id_ejercicio' => $s['id_ejercicio'],
+                    'serie_num' => $s['serie_num'],
+                    'repeticiones' => $s['repeticiones'],
+                    'peso' => $s['peso']
                 ]);
             }
         }
 
-        return redirect()->route('sesiones.index');
+        return redirect()->route('sesiones.index')->with('success', 'Sesión actualizada correctamente');
     }
 
     public function destroy(Sesion $sesion)
