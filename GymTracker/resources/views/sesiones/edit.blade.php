@@ -72,6 +72,8 @@
             <input type="text" name="series[{{ $i }}][peso]" 
                    value="{{ $serieData['peso'] ?? '' }}" 
                    placeholder="Peso" class="w-20 p-2 border rounded" required>
+            <a href="{{ route('sesiones.edit', ['sesion' => $sesion->id_sesion, 'numSeries' => $count - 1, 'removeIndex' => $i]) }}"
+                    class="ml-2 px-2 py-1 bg-red-500 text-white text-sm rounded">Eliminar</a>
         </div>
         @endfor
     </div>

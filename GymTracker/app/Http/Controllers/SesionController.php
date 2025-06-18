@@ -48,12 +48,31 @@ class SesionController extends Controller
         return view('sesiones.show', compact('sesion'));
     }
 
-    public function edit(Request $request, Sesion $sesion)
-    {
-        $ejercicios = Ejercicio::all();
-        $numSeries = $request->get('numSeries', $sesion->series->count());
-        return view('sesiones.edit', compact('sesion','ejercicios','numSeries'));
+public function edit(Request $request, Sesion $sesion)
+{
+    $ejercicios = Ejercicio::all();
+    $numSeries = $request->get('numSeries', $sesion->series->count());
+
+    // Si se ha solicitado eliminar una serie
+    $removeIndex = $request->get('removeIndex');
+    if (is_numeric($removeIndex)) {
+        // Convertimos a array, quitamos la serie, reindexamos
+        $series = $sesion->series->toArray();
+        unset($series[$removeIndex]);
+        $series = array_values($series);
+        // Simulamos que se editan solo las series restantes
+        session()->flashInput([
+            'series' => $series
+        ]);
+        // Redirigir a edit con un numSeries reducido
+        return redirect()->route('sesiones.edit', [
+            'sesion' => $sesion->id_sesion,
+            'numSeries' => count($series)
+        ]);
     }
+
+    return view('sesiones.edit', compact('sesion', 'ejercicios', 'numSeries'));
+}
 
     public function update(Request $request, Sesion $sesion)
     {
